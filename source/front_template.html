@@ -1,0 +1,247 @@
+<h3>{{Front}} (<span id="count"></span>)</h3>
+
+    <ul id="asnws"></ul>
+
+    {{type:Back}}
+
+    <script>
+      var MAX_LEVENSHTEIN_DISTANCE = 2;
+
+      try {
+        var asnws = "{{Back}}".replace(/<\/div>/g, "").split("\\");
+        var asnwsEl = document.getElementById("asnws");
+
+        // We are using the #typeans id, this ensures that Anki will autofocus the input. Autofocusing using javascript's .focus() did not work...
+        var ansInput = document.getElementById("typeans");
+
+        var colors = [
+          '#f44336', '#e91e63', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFC107', '#FF9800', '#FF5722'
+        ];
+
+        var bgcolors = [
+          '#43424c', '#27232f',
+        ];
+
+        document.getElementById("count").innerHTML = asnws.length - 1;
+
+        document.body.style.background = bgcolors[getRandomInt(0, bgcolors.length - 1)];
+
+        var fonts = ["Arial", "Georgia", "Noto Sans", "Roboto", "Verdana", "Times New Roman", "Segoe UI", "Calibri", "Comic Sans", "Consolas"];
+
+        shuffle(asnws).forEach(function (item, i) {
+          if (item.length < 1) {
+            return;
+          } // ignore empty els
+          var elLi = document.createElement("li");
+          elLi.innerHTML = item;
+          var rndColor = colors[getRandomInt(0, colors.length - 1)];
+          elLi.style.color = rndColor;
+          elLi.style.backgroundColor = rndColor;
+          elLi.style.fontFamily = fonts[getRandomInt(0, fonts.length - 1)];
+          elLi.style.textShadow = "none";
+          elLi.setAttribute("id", hash(item));
+          asnwsEl.appendChild(elLi);
+        })
+      } catch (e) {
+        alert(e);
+      }
+
+      ansInput.onkeypress = function (e) {
+        ansInput.style.color = colors[getRandomInt(0, colors.length - 1)];
+        if (e.keyCode === 13) {
+          let hit = false;
+          asnws.forEach(function (item, j) {
+            if (levenshtein(decodeEntities(item), ansInput.value) <= MAX_LEVENSHTEIN_DISTANCE) {
+              var el = document.getElementById(hash(item));
+              reapplyClass(el, "pop-in", 150, function () {
+                el.style.backgroundColor = null;
+              });
+              ansInput.value = "";
+              asnws.splice(j, 1);
+              hit = true;
+              return;
+            } else if (item.match(/<b>(.*)<\/b>/) !== null && levenshtein(item.match(/<b>(.*)<\/b>/)[1], ansInput.value) <= MAX_LEVENSHTEIN_DISTANCE) {
+              if (levenshtein(item.match(/<b>(.*)<\/b>/)[1], ansInput.value) <= 2) {
+                var el = document.getElementById(hash(item));
+                reapplyClass(el, "pop-in", 150, function () {
+                  el.style.backgroundColor = null;
+                });
+                ansInput.value = "";
+                asnws.splice(j, 1);
+                hit = true;
+                return;
+              }
+            } else {
+              var triggers = stripHtml(item).split(" ");
+              for (var i = 0; i < triggers.length; i++) {
+                if (levenshtein(decodeEntities(triggers[i]), ansInput.value) <= MAX_LEVENSHTEIN_DISTANCE) {
+                  var el = document.getElementById(hash(item));
+                  reapplyClass(el, "pop-in", 150, function () {
+                    el.style.backgroundColor = null;
+                  });
+                  ansInput.value = "";
+                  var triggerIndex = el.innerHTML.indexOf(triggers[i]);
+                  el.innerHTML = el.innerHTML.slice(0, triggerIndex) + "<u>" + el.innerHTML.slice(triggerIndex, triggerIndex + triggers[i].length) + "</u>" + el.innerHTML.slice(triggerIndex + triggers[i].length, el.innerHTML.length);
+                  asnws.splice(j, 1);
+                  triggers.splice(i, 1);
+                  hit = true;
+                  break;
+                }
+              }
+            }
+          })
+
+          if (hit === false) {
+            reapplyClass(ansInput, "shake", 350);
+          }
+        }
+      }
+
+
+      function stripHtml(html) {
+        return html.replace(/<(?:.|\n)*?>/gm, '');
+      }
+
+      function levenshtein(str1, str2) {
+        var cost = new Array(),
+          n = str1.length,
+          m = str2.length,
+          i, j;
+
+        var minimum = function (a, b, c) {
+          var min = a;
+          if (b < min) {
+            min = b;
+          }
+          if (c < min) {
+            min = c;
+          }
+          return min;
+        }
+
+        if (n == 0) {
+          return;
+        }
+        if (m == 0) {
+          return;
+        }
+
+        for (var i = 0; i <= n; i++) {
+          cost[i] = new Array();
+        }
+
+        for (i = 0; i <= n; i++) {
+          cost[i][0] = i;
+        }
+
+        for (j = 0; j <= m; j++) {
+          cost[0][j] = j;
+        }
+
+        for (i = 1; i <= n; i++) {
+          var x = str1.charAt(i - 1);
+
+          for (j = 1; j <= m; j++) {
+            var y = str2.charAt(j - 1);
+
+            if (x == y) {
+              cost[i][j] = cost[i - 1][j - 1];
+            } else {
+              cost[i][j] = 1 + minimum(cost[i - 1][j - 1], cost[i][j - 1], cost[i - 1][j]);
+            }
+
+          } //endfor
+
+        } //endfor
+
+        return cost[n][m];
+      }
+
+      function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+      }
+
+      function hash(s) {
+        /* Simple hash function. */
+        var a = 1, c = 0, h, o;
+        if (s) {
+          a = 0;
+          /*jshint plusplus:false bitwise:false*/
+          for (h = s.length - 1; h >= 0; h--) {
+            o = s.charCodeAt(h);
+            a = (a << 6 & 268435455) + o + (o << 14);
+            c = a & 266338304;
+            a = c !== 0 ? a ^ c >> 21 : a;
+          }
+        }
+        return String(a);
+      };
+
+      var decodeEntities = (function () {
+        // this prevents any overhead from creating the object each time
+        var element = document.createElement('div');
+
+        function decodeHTMLEntities(str) {
+          if (str && typeof str === 'string') {
+            // strip script/html tags
+            str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
+            str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
+            element.innerHTML = str;
+            str = element.textContent;
+            element.textContent = '';
+          }
+
+          return str;
+        }
+
+        return decodeHTMLEntities;
+      })();
+
+      function shuffle(arr) {
+        return arr.reduce(function (arr, elt) {
+          arr.splice(~~(Math.random() * (arr.length + 1)), 0, elt)
+          return arr;
+        }, [])
+      }
+
+      function reapplyClass(element, classString, animationDuration = 500, callback, timeout = 0, persistent = false) {
+        setTimeout(() => {
+          removeClass(element, classString);
+          element.style.animationDuration = `${animationDuration / 1000}s`;
+
+          /**
+           * @link https://css-tricks.com/restart-css-animation/#article-header-id-0
+           */
+          void element.offsetWidth;
+          setTimeout(() => {
+            window.requestAnimationFrame(() => {
+              addClass(element, classString);
+            });
+
+            setTimeout(() => {
+              if (persistent === false) {
+                removeClass(element, classString);
+              }
+              if (typeof callback === "function") callback();
+              element.style.removeProperty("animation-duration")
+            }, animationDuration)
+          }, timeout);
+        }, 1);
+      }
+
+      function removeClass(elementNode, classString) {
+        let elClass = elementNode.getAttribute("class") || "";
+        if (elClass.indexOf(classString) > -1) {
+          elementNode.setAttribute("class", elClass.replace(new RegExp(` ?${classString}`, "g"), ""));
+        }
+      }
+
+      function addClass(elementNode, classString, once = true) {
+        let currentClassName = elementNode.getAttribute("class") || "";
+        if (once === true && currentClassName.indexOf(classString) === -1) {
+          elementNode.setAttribute("class", [currentClassName, classString].join(" "));
+        } else if (once === false) {
+          elementNode.setAttribute("class", [currentClassName, classString].join(" "))
+        }
+      }
+    </script>

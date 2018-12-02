@@ -1,0 +1,250 @@
+h3 {
+    text-shadow: 1px 1px 2px #000;
+}
+
+body {
+    background: #000;
+}
+
+u {
+    border: 2px solid;
+    padding: 4px;
+    text-decoration: none;
+}
+
+#typeans {
+    box-sizing: border-box;
+    width: 100%;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: none;
+    outline: none;
+    padding: 5px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.8);
+    text-shadow: 1px 1px 0 #000;
+}
+
+#input {
+    color: red;
+    font-size: 25px;
+
+}
+
+input, .card {
+    font-family: Noto Sans;
+    font-size: 20px;
+    color: #fff;
+}
+
+input {
+    color: #000;
+}
+
+br {
+    display: block !important;
+    margin-botom: 10px !important;
+}
+
+#asnws {
+    padding: 0;
+    margin: 50px 0;
+    list-style: none;
+}
+
+#asnws li:hover {
+    background-color: rgba(0, 0, 0, 0) !important;
+}
+
+#asnws li {
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 1px #000;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px;
+    cursor: pointer;
+}
+
+
+@keyframes pulse {
+    from {
+        transform: scale3d(1, 1, 1);
+    }
+
+    50% {
+        transform: scale3d(1.05, 1.05, 1.05);
+    }
+
+    to {
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+.pulse {
+    animation-name: pulse;
+}
+
+
+@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed);
+
+
+#hiddenInput {
+    font-size: 40px;
+    font-family: 'Roboto Condensed', sans-serif;
+    background-color: #808080;
+    position: absolute;
+    opacity: 0.4;
+    margin-top: -22px;
+    margin-left: -125px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+#container {
+    margin-top: 70px;
+    display: block;
+    position: absolute;
+    left: 30%;
+}
+
+#input {
+    position: absolute;
+    margin-top: -20px;
+    margin-left: -120px;
+}
+
+.letterContainer {
+    display: inline;
+    white-space: nowrap;
+}
+
+.letterStatic {
+    display: inline;
+}
+
+.letterAnimTop {
+    display: inline;
+    position: absolute;
+    -webkit-animation: dropTop .1s ease;
+    -moz-animation: dropTop .1s ease;
+
+}
+
+.letterAnimBottom {
+    display: inline;
+    position: absolute;
+    -webkit-animation: dropBottom .1s ease;
+    -moz-animation: dropBottom .1s ease;
+}
+
+.blink {
+    position: static;
+    top: -5px;
+    -webkit-animation: blink 0.3s ease 0 infinite alternate;
+    -moz-animation: blink 0.3s ease 0 infinite alternate;
+}
+
+@-moz-keyframes blink {
+    from {
+        opacity: 0
+    }
+    to {
+        opactiy: 1
+    }
+}
+
+@-webkit-keyframes blink {
+    from {
+        opacity: 0
+    }
+    to {
+        opactiy: 1
+    }
+}
+
+@-moz-keyframes dropTop {
+    from {
+        -moz-transform: translateX(0) translateY(-20px) translateZ(20px) rotateX(90deg);
+        transform: translateX(0) translateY(-20px) translateZ(20px) rotateX(90deg);
+    }
+
+    to {
+        -moz-transform: translateX(0) translateY(0) translateZ(0) rotateX(0deg);
+        transform: translateX(0) translateY(0) translateZ(0) rotateX(0deg);
+    }
+}
+
+@-moz-keyframes dropBottom {
+    from {
+        -moz-transform: translateY(20px) translateZ(20px) rotateX(-90deg);
+        transform: translateY(20px) translateZ(20px) rotateX(-90deg);
+    }
+
+    to {
+        -moz-transform: rotateX(0deg);
+        transform: rotateX(0deg);
+    }
+}
+
+@-webkit-keyframes dropTop {
+    from {
+        -webkit-transform: translateX(0) translateY(-20px) translateZ(20px) rotateX(90deg);
+    }
+    to {
+        -webkit-transform: translateX(0) translateY(0) translateZ(0) rotateX(0deg);
+    }
+}
+
+@-webkit-keyframes dropBottom {
+    from {
+        -webkit-transform: translateY(20px) translateZ(20px) rotateX(-90deg);
+    }
+    to {
+        -webkit-transform: rotateX(0deg);
+    }
+}
+
+@keyframes shake {
+    from, to {
+        transform: translate3d(0, 0, 0);
+    }
+
+    10%, 50%, 90% {
+        transform: translate3d(-7px, 0, 0);
+    }
+
+    20%, 60% {
+        transform: translate3d(7px, 0, 0);
+    }
+}
+
+.shake {
+    animation: shake;
+}
+
+@keyframes pop-in {
+    0% {
+        -webkit-transform: scale(0.6);
+        -moz-transform: scale(0.6);
+        -ms-transform: scale(0.6);
+        -o-transform: scale(0.6);
+        transform: scale(0.6);
+    }
+
+    60% {
+        -webkit-transform: scale(1.05);
+        -moz-transform: scale(1.05);
+        -ms-transform: scale(1.05);
+        -o-transform: scale(1.05);
+        transform: scale(1.05);
+    }
+    100% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -o-transform: scale(1);
+        transform: scale(1);
+    }
+}
+
+.pop-in {
+    animation: 0.234s pop-in 0s 1 forwards;
+}

@@ -1,0 +1,121 @@
+<h3>{{Front}}</h3>
+
+<ul id="asnws"></ul>
+
+<script>
+  var asnws = "{{Back}}".replace(/(<\/?div>)/g, "").split("\\");
+  var asnwsEl = document.getElementById("asnws");
+  var ansInput = document.getElementById("ans");
+  setTimeout(function () {
+    ansInput.focus();
+  }, 500);
+  var mockInput = document.getElementById("ans")
+  var colors = [
+    '#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5',
+    '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50',
+    '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800',
+    '#FF5722'
+  ];
+
+  var fonts = ["Arial", "Georgia", "Noto Sans", "Roboto", "Verdana", "Times New Roman", "Segoe UI", "Calibri", "Comic Sans", "Consolas"];
+
+  shuffle(asnws).forEach(function (item, i) {
+    if (item.length < 1) {
+      return;
+    } // ignore empty els
+    var elLi = document.createElement("li");
+    elLi.innerHTML = item;
+    var rndColor = colors[getRandomInt(0, colors.length - 1)];
+    elLi.style.color = rndColor;
+    elLi.style.fontFamily = fonts[getRandomInt(0, fonts.length - 1)];
+    elLi.style.textShadow = "none";
+    elLi.setAttribute("id", hash(item));
+    asnwsEl.appendChild(elLi);
+  })
+
+  function stripHtml(html) {
+    return html.replace(/<(?:.|\n)*?>/gm, '');
+  }
+
+  function levenshtein(str1, str2) {
+    var cost = new Array(),
+      n = str1.length,
+      m = str2.length,
+      i, j;
+
+    var minimum = function (a, b, c) {
+      var min = a;
+      if (b < min) {
+        min = b;
+      }
+      if (c < min) {
+        min = c;
+      }
+      return min;
+    }
+
+    if (n == 0) {
+      return;
+    }
+    if (m == 0) {
+      return;
+    }
+
+    for (var i = 0; i <= n; i++) {
+      cost[i] = new Array();
+    }
+
+    for (i = 0; i <= n; i++) {
+      cost[i][0] = i;
+    }
+
+    for (j = 0; j <= m; j++) {
+      cost[0][j] = j;
+    }
+
+    for (i = 1; i <= n; i++) {
+      var x = str1.charAt(i - 1);
+
+      for (j = 1; j <= m; j++) {
+        var y = str2.charAt(j - 1);
+
+        if (x == y) {
+          cost[i][j] = cost[i - 1][j - 1];
+        } else {
+          cost[i][j] = 1 + minimum(cost[i - 1][j - 1], cost[i][j - 1], cost[i - 1][j]);
+        }
+
+      } //endfor
+
+    } //endfor
+
+    return cost[n][m];
+  }
+
+  function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  function hash(s) {
+    /* Simple hash function. */
+    var a = 1, c = 0, h, o;
+    if (s) {
+      a = 0;
+      /*jshint plusplus:false bitwise:false*/
+      for (h = s.length - 1; h >= 0; h--) {
+        o = s.charCodeAt(h);
+        a = (a << 6 & 268435455) + o + (o << 14);
+        c = a & 266338304;
+        a = c !== 0 ? a ^ c >> 21 : a;
+      }
+    }
+    return String(a);
+  };
+
+  function shuffle(arr) {
+    return arr.reduce(function (arr, elt) {
+      arr.splice(~~(Math.random() * (arr.length + 1)), 0, elt)
+      return arr;
+    }, [])
+  }
+</script>
